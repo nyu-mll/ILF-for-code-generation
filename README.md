@@ -1,7 +1,7 @@
 # ILF for Code Generation
 
 This repository contains the code and data (human-written feedback and refinements) for running the Imitation learning from Language Feedback (ILF) algorithm 
-for code generation from "Improving Code Generation by Training with Natural Language Feedback" by Chen et al. (2023).
+for code generation from "Improving Code Generation by Training with Natural Language Feedback" by [Chen et al. (2023)](https://github.com/nyu-mll/ILF-for-code-generation/blob/main/ilf_for_code_gen.pdf).
 
 ## Installation
 
