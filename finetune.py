@@ -2,6 +2,9 @@
 # coding=utf-8
 """
 Fine-tuning CodeGen models on the input data.
+Adapted from a HuggingFace transformers example for training seq2seq models.
+
+Assumes that CodeGen model checkpoints are stored in {data_args.codegen_repo}/codegen-[6B|16B]-mono.
 """
 import os
 
