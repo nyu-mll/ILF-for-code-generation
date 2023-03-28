@@ -1,15 +1,10 @@
-import sys
 from tqdm import tqdm
 from datasets import Dataset, load_dataset, concatenate_datasets
 from jaxformer.hf.codegen import modeling_codegen
 from jaxformer.hf import sample
-from collections import defaultdict
 import torch
-import time
-import requests
 import pprint
 import os
-import numpy as np
 import logging
 import json
 import csv

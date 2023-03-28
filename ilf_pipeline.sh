@@ -128,6 +128,7 @@ GOLD_TRAINING_FILE="${PI_REF_DIR}/finetuning_prompts_mbpp_gold_surge_final.jsonl
 # Fine-tune (1)
 FINAL_GOLD_FINETUNE_DIR=${EXPERIMENT_DIR}/final_gold_finetune_lr${LEARNING_RATE}_ga${GRADIENT_ACCUMULATION_STEPS}_${NUM_EPOCHS}epochs
 python finetune.py  \
+    --codegen_repo=${CHECKPOINTS_DIR} \
     --do_train \
     --model_name_or_path=codegen-6B \
     --save_strategy=no \
@@ -151,6 +152,7 @@ python finetune.py  \
 # Fine-tune (2)
 FINAL_FINETUNE_DIR=${EXPERIMENT_DIR}/final_finetune_lr${LEARNING_RATE}_ga${GRADIENT_ACCUMULATION_STEPS}_${NUM_EPOCHS}epochs
 python finetune.py  \
+    --codegen_repo=${CHECKPOINTS_DIR} \
     --do_train \
     --model_name_or_path=codegen-6B \
     --save_strategy=no \
@@ -175,6 +177,7 @@ python finetune.py  \
 # Evaluate models (1) and (2) on MBPP_Test
 ## First generate programs for MBPP_Test
 python generate_code_for_mbpp.py \
+    --codegen-model-dir=${CHECKPOINTS_DIR} \
     --num-samples=${NUM_OUTPUT_SAMPLES} \
     --output-dir=${FINAL_GOLD_FINETUNE_DIR} \
     --arch=codegen-6B \
@@ -183,6 +186,7 @@ python generate_code_for_mbpp.py \
     --debug -s ${TEST_START_TASK_ID} -e ${TEST_END_TASK_ID} \
     --model-path=${FINAL_GOLD_FINETUNE_DIR} || exit
 python generate_code_for_mbpp.py \
+    --codegen-model-dir=${CHECKPOINTS_DIR} \
     --num-samples=${NUM_OUTPUT_SAMPLES} \
     --output-dir=${FINAL_FINETUNE_DIR} \
     --arch=codegen-6B \

@@ -2,27 +2,15 @@
 # coding=utf-8
 """
 Fine-tuning CodeGen models on the input data.
-
-Depends on the SalesForce CodeGen github repo: https://github.com/salesforce/CodeGen.
-Replace the argument to sys.path.append with the path to the repo, and also pass the path to
-the argument --codegen_repo.
 """
 import os
 
-# os.environ["MASTER_ADDR"] = "localhost"
-# os.environ["MASTER_PORT"] = "9991"  # modify if RuntimeError: Address already in use
-# os.environ["RANK"] = "0"
-# os.environ["LOCAL_RANK"] = "0"
-# os.environ["WORLD_SIZE"] = "1"
-
 import sys
-
-sys.path.append("/scratch/ac5968/code_gen/CodeGen")
 
 import logging
 import torch
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import datasets
 from datasets import load_dataset, load_metric, DatasetDict
@@ -30,32 +18,19 @@ from datasets import load_dataset, load_metric, DatasetDict
 from jaxformer.hf import sample  # from the CodeGen repository
 from jaxformer.hf.codegen import modeling_codegen  # from the CodeGen repository
 
-from tqdm import tqdm
-
 import transformers
 from transformers import (
-    AutoConfig,
-    AutoModelForSeq2SeqLM,
-    AutoTokenizer,
     DataCollatorForSeq2Seq,
-    GPTNeoForCausalLM,
     HfArgumentParser,
-    is_torch_tpu_available,
     Seq2SeqTrainer,
     Seq2SeqTrainingArguments,
     set_seed,
 )
 from transformers.trainer_utils import (
-    EvalLoopOutput,
-    EvalPrediction,
     get_last_checkpoint,
 )
 
 logger = logging.getLogger(__name__)
-
-if is_torch_tpu_available():
-    import torch_xla.core.xla_model as xm
-    import torch_xla.debug.metrics as met
 
 
 @dataclass
@@ -65,18 +40,12 @@ class ModelArguments:
     """
 
     model_name_or_path: str = field(
-        default=None, metadata={"help": "Can be gptneo, codegen-16B, or codegen-6B."}
+        default=None, metadata={"help": "Can be codegen-16B, or codegen-6B."}
     )
     config_name: Optional[str] = field(
         default=None,
         metadata={
             "help": "Pretrained config name or path if not the same as model_name"
-        },
-    )
-    tokenizer_name: Optional[str] = field(
-        default="EleutherAI/gpt-neo-2.7B",
-        metadata={
-            "help": "Pretrained tokenizer name or path if not the same as model_name"
         },
     )
     cache_dir: Optional[str] = field(
@@ -116,7 +85,7 @@ class DataTrainingArguments:
     """
 
     codegen_repo: Optional[str] = field(
-        default="/scratch/ac5968/code_gen/CodeGen",
+        default=None,
         metadata={"help": "Path to the cloned SalesForce codegen repo."},
     )
     dataset_name: Optional[str] = field(
@@ -142,7 +111,7 @@ class DataTrainingArguments:
         },
     )
     train_file: Optional[str] = field(
-        default="/scratch/ac5968/code_gen/mbpp_output/feedback_gptneo_1shot_20220323_with_ref-2.csv",
+        default=None,
         metadata={"help": "The input training data file (a text file)."},
     )
     validation_file: Optional[str] = field(
@@ -400,40 +369,14 @@ def main():
     # The .from_pretrained methods guarantee that only one local process can concurrently
     # download model & vocab.
 
-    if model_args.model_name_or_path == "gptneo":
-        config = AutoConfig.from_pretrained(
-            model_args.config_name
-            if model_args.config_name
-            else model_args.model_name_or_path,
-            cache_dir=model_args.cache_dir,
-            revision=model_args.model_revision,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
-        tokenizer = AutoTokenizer.from_pretrained(
-            model_args.tokenizer_name
-            if model_args.tokenizer_name
-            else model_args.model_name_or_path,
-            cache_dir=model_args.cache_dir,
-            use_fast=True,
-            revision=model_args.model_revision,
-            use_auth_token=True if model_args.use_auth_token else None,
-        )
-        tokenizer.pad_token = tokenizer.eos_token
-        model = GPTNeoForCausalLM.from_pretrained(
-            None,
-            config=model_args.config_name,
-            state_dict=torch.load(
-                "/scratch/ac5968/code_gen/app_models/2.7B/pytorch_model.bin"
-            ),
-        )
-    elif model_args.model_name_or_path.startswith("codegen-"):
+    if model_args.model_name_or_path.startswith("codegen-"):
         if last_checkpoint is not None:
             model = modeling_codegen.CodeGenForCausalLM.from_pretrained(
                 last_checkpoint, low_cpu_mem_usage=True
             )
         else:
             model = modeling_codegen.CodeGenForCausalLM.from_pretrained(
-                f"{data_args.codegen_repo}/checkpoints/{model_args.model_name_or_path}-mono",
+                f"{data_args.codegen_repo}/{model_args.model_name_or_path}-mono",
                 low_cpu_mem_usage=True,
             )
         ## IMPORTANT: DO NOT REMOVE
