@@ -1,0 +1,36 @@
+name: ilf
+channels:
+  - pytorch
+  - conda-forge
+  - defaults
+dependencies:
+  - cudatoolkit=11.6.0=hecad31d_10
+  - pip=22.1.2
+  - python=3.7.13=h12debd9_0
+  - pytorch=1.12.1=py3.7_cuda11.6_cudnn8.3.2_0
+  - pytorch-mutex=1.0=cuda
+  - readline=8.1.2=h7f8727e_1
+  - setuptools=63.4.1
+  - pip:
+    - argparse==1.4.0
+    - datasets==2.7.1
+    - evaluate==0.3.0
+    - huggingface-hub==0.9.1
+    - matplotlib==3.5.3
+    - nltk==3.7
+    - numpy==1.21.6
+    - openai==0.23.0
+    - pytest==7.2.2
+    - python-dateutil==2.8.2
+    - pytz==2022.2.1
+    - regex==2022.9.13
+    - sacremoses==0.0.53
+    - scikit-learn==1.0.2
+    - scipy==1.7.3
+    - six==1.16.0
+    - sklearn==0.0
+    - timeout-decorator==0.5.0
+    - tokenizers==0.10.3
+    - tqdm==4.64.1
+    - transformers==4.12.5
+    - -e git+https://github.com/salesforce/jaxformer.git@23b54c89a6b7ac4fbb8727c15b445092d3127baa#egg=jaxformer
