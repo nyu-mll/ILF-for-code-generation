@@ -43,6 +43,7 @@ def estimate_pass_at_k(
 ) -> np.ndarray:
     """
     Estimates pass@k of each problem and returns them in an array.
+    Taken from https://github.com/openai/human-eval/blob/master/human_eval/evaluation.py#L13.
     """
 
     def estimator(n: int, c: int, k: int) -> float:
