@@ -33,4 +33,3 @@ dependencies:
     - tokenizers==0.10.3
     - tqdm==4.64.1
     - transformers==4.12.5
-    - -e git+https://github.com/salesforce/jaxformer.git@23b54c89a6b7ac4fbb8727c15b445092d3127baa#egg=jaxformer

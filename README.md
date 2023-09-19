@@ -13,6 +13,14 @@ git clone git@github.com:nyu-mll/ILF-for-code-generation.git
 cd ILF-for-code-generation
 conda env create -f environment.yml
 
+# Install codegen repo and reset to old commit
+git clone git@github.com:salesforce/CodeGen.git
+cd CodeGen
+git reset --hard 9cc1f971c83ad606cce5da292d3c58523dd920a2
+git clean -df
+pip3 install -r requirements.txt
+cd ..
+
 # To download codegen-6B-mono
 wget -P checkpoints https://storage.googleapis.com/sfr-codegen-research/checkpoints/codegen-6B-mono.tar.gz && tar -xvf checkpoints/codegen-6B-mono.tar.gz -C checkpoints/
 
